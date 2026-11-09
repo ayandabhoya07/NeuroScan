@@ -1,419 +1,217 @@
 # NeuroScan
 
-### Brain MRI Image Classification with a Custom CNN, FastAPI & JavaScript
+**Brain MRI classification with a custom CNN, FastAPI and a JavaScript front end.**
 
-```{=html}
 <p align="center">
-```
-`<strong>`{=html}An end-to-end deep learning project for classifying
-brain MRI images into four dataset categories.`</strong>`{=html}
-```{=html}
+  <img src="https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white" alt="Python 3.11">
+  <img src="https://img.shields.io/badge/Keras-3-red?logo=keras&logoColor=white" alt="Keras 3">
+  <img src="https://img.shields.io/badge/PyTorch-backend-ee4c2c?logo=pytorch&logoColor=white" alt="PyTorch backend">
+  <img src="https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white" alt="FastAPI">
+  <img src="https://img.shields.io/badge/Test%20accuracy-93.56%25-success" alt="Test accuracy 93.56%">
 </p>
-```
-```{=html}
-<p align="center">
-```
-`<img src="https://img.shields.io/badge/Python-3.11.9-blue?logo=python&logoColor=white" alt="Python 3.11.9">`{=html}
-`<img src="https://img.shields.io/badge/Keras-3.x-red?logo=keras&logoColor=white" alt="Keras 3">`{=html}
-`<img src="https://img.shields.io/badge/PyTorch-Backend-ee4c2c?logo=pytorch&logoColor=white" alt="PyTorch">`{=html}
-`<img src="https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white" alt="FastAPI">`{=html}
-`<img src="https://img.shields.io/badge/Status-Local%20application%20tested-success" alt="Status">`{=html}
-```{=html}
-</p>
-```
 
-------------------------------------------------------------------------
+NeuroScan classifies a brain MRI image as **glioma**, **meningioma**, **pituitary tumor** or **no tumor**. It covers the full workflow: data exploration, preprocessing, model development, evaluation, a REST API and a browser interface.
 
-## Overview
+> **Medical disclaimer.** NeuroScan is an educational project. It is not a medical device, has not been clinically validated, and must not be used to diagnose, rule out or make treatment decisions about any condition. MRI scans must be interpreted by qualified healthcare professionals.
 
-**NeuroScan** is an educational deep learning application that uses a
-custom Convolutional Neural Network (CNN) to classify brain MRI images
-into one of four categories:
+**Live demo:** `<add link once deployed>`
 
--   **Glioma**
--   **Meningioma**
--   **No Tumor** (`notumor`)
--   **Pituitary**
+<!-- ![NeuroScan demo](reports/demo.png) -->
 
-The project covers the full machine-learning workflow: dataset
-exploration, image preprocessing, CNN development, model training,
-evaluation, inference, API development, and a browser-based interface.
+---
 
-The selected CNN V2 model achieved **93.56% accuracy** on the project's
-held-out test set of 2,080 images.
+## Highlights
 
-> **Important medical disclaimer:** NeuroScan is an educational and
-> experimental project. It is not a medical device, has not been
-> clinically validated, and must not be used to diagnose, rule out, or
-> make treatment decisions about any medical condition. MRI scans must
-> be interpreted by qualified healthcare professionals.
+- **93.56% test accuracy** and **0.932 macro F1** on 2,080 held-out images
+- Custom CNN built from scratch, improved from 86.8% to 93.6% through systematic experiments
+- One shared preprocessing pipeline for training, evaluation and inference
+- FastAPI `/predict` endpoint and a drag-and-drop web interface
+- Full evaluation artifacts: classification report, confusion matrix, training curves
 
-------------------------------------------------------------------------
+---
 
-## Key Features
+## Results
 
--   Four-class brain MRI image classification.
--   Custom CNN architecture developed and trained for this project.
--   Experiments with Batch Normalization, regularization, learning-rate
-    scheduling, and transfer learning.
--   Image upload and preview through a browser interface.
--   FastAPI endpoint for model inference.
--   Displays the predicted dataset class and scores for all four
-    classes.
--   Visual confidence indicator with high, moderate, and low model-score
-    labels.
--   Evaluation reports, accuracy/loss plots, and confusion matrices.
--   Separate folders for the final model and experimental checkpoints.
+Evaluated on a held-out test set of 2,080 images.
 
-------------------------------------------------------------------------
+| Metric | Score |
+|---|---:|
+| Accuracy | **93.56%** |
+| Macro precision | 93.31% |
+| Macro recall | 93.15% |
+| Macro F1 | 93.20% |
+| Weighted F1 | 93.51% |
 
-## Model Performance
+| Class | Precision | Recall | F1 | Images |
+|---|---:|---:|---:|---:|
+| Glioma | 93.98% | 93.33% | 93.65% | 585 |
+| Meningioma | 90.12% | 85.19% | 87.59% | 439 |
+| No tumor | 94.92% | 97.54% | 96.21% | 651 |
+| Pituitary | 94.22% | 96.54% | 95.37% | 405 |
 
-The final selected model was evaluated on **2,080 test images**.
+![Confusion matrix](reports/confusion_matrix_v2.png)
 
-### Overall result
+**Reading the results**
+- Meningioma is the weakest class (recall 85.19%). Its errors go mostly to glioma, which is plausible because the two can look similar on MRI.
+- 34 of the 1,429 tumor images in the test set (about 2.4%) were predicted as "no tumor". This is the most serious error type for any diagnostic use.
+- Training (94.1%), validation (93.9%) and test (93.6%) accuracy are close together, so the model is not overfitting.
 
-  Metric                     Score
-  ------------------- ------------
-  Test accuracy         **93.56%**
-  Macro precision           93.31%
-  Macro recall              93.15%
-  Macro F1-score            93.20%
-  Weighted F1-score         93.51%
+These figures describe this dataset split only. They do not show how the model performs on scans from other hospitals, scanners or populations.
 
-### Per-class results
+Plots and reports are in [`reports/`](reports/).
 
-  Class          Precision   Recall   F1-score   Test images
-  ------------ ----------- -------- ---------- -------------
-  Glioma            93.98%   93.33%     93.65%           585
-  Meningioma        90.12%   85.19%     87.59%           439
-  No Tumor          94.92%   97.54%     96.21%           651
-  Pituitary         94.22%   96.54%     95.37%           405
+---
 
-### Evaluation notes
+## Model development
 
-Meningioma has the lowest recall at **85.19%**. This means that some
-meningioma examples in the test set were classified as another category.
-This limitation is important and should be considered alongside the
-overall accuracy.
+| Experiment | Description | Result | Outcome |
+|---|---|---:|---|
+| CNN V1 | 3 conv layers, no BatchNorm (110k parameters) | 86.78% test | Baseline |
+| CNN V1 + BatchNorm | BatchNorm with fixed lr 1e-3 | 83.97% val | Unstable, abandoned |
+| EfficientNetB0 | Frozen ImageNet backbone, new head | 84.42% val | Plateaued; frozen features did not fit MRI texture |
+| **CNN V2** | 4 blocks, BatchNorm (momentum 0.9), AdamW, cosine lr decay | **93.56% test** | **Selected** |
 
-The reported metrics describe performance on this dataset split only.
-They do not establish performance on scans from other hospitals,
-scanners, populations, or clinical settings.
+**What the experiments showed**
+- A deeper CNN without BatchNorm reached only about 85%, with training and validation accuracy equal. That is underfitting, so more regularization would not have helped.
+- BatchNorm failed the first time because of the learning rate and momentum, not because of the technique. With a lower learning rate (3e-4), a cosine schedule and momentum 0.9, it added about 9 points.
+- A frozen pretrained backbone is effectively a linear classifier on ImageNet features. It would need fine-tuning to improve on this task.
 
-Evaluation artifacts are available in the [`reports/`](reports/)
-directory.
+### Selected architecture (CNN V2)
 
-------------------------------------------------------------------------
-
-## Model Development
-
-NeuroScan includes multiple experiments rather than relying on a single
-model attempt.
-
-  -----------------------------------------------------------------------
-  Experiment              Description             Role
-  ----------------------- ----------------------- -----------------------
-  CNN V1                  Initial custom CNN with Baseline
-                          three convolutional     
-                          blocks                  
-
-  CNN V2                  Deeper custom CNN with  Improved custom model
-                          four convolutional      
-                          blocks and Batch        
-                          Normalization           
-
-  EfficientNetB0          Transfer-learning       Alternative approach
-                          experiment using        explored
-                          ImageNet weights        
-  -----------------------------------------------------------------------
-
-### Selected architecture: CNN V2
-
-The selected custom model uses:
-
--   Four convolutional blocks with filter sizes of 32, 64, 128, and 256.
--   Two convolutional layers in each block.
--   Batch Normalization and ReLU activations.
--   Max Pooling for spatial downsampling.
--   Global Average Pooling.
--   A 128-unit dense layer.
--   Dropout regularization.
--   A four-unit softmax output layer.
-
-The training experiments also explored AdamW, weight decay, cosine-decay
-learning-rate scheduling, and mixed precision.
-
-The final application loads:
-
-``` text
-models/neuroscan_cnn_v2_bn_final.keras
+```text
+Input (224 x 224 x 3)
+  -> 4 blocks: [Conv 3x3 -> BatchNorm -> ReLU] x 2 -> MaxPool
+     filters: 32 -> 64 -> 128 -> 256
+  -> Global Average Pooling
+  -> Dense (128, ReLU)
+  -> Dropout
+  -> Dense (4, Softmax)
 ```
 
-Earlier model files are retained under `experiments/` to document the
-development process. They are not the model used by the application.
+Training setup: AdamW (weight decay 1e-4), cosine learning-rate decay from 3e-4, BatchNorm momentum 0.9, batch size 32, mixed precision, 15 epochs, best epoch chosen by validation accuracy. Trained on an NVIDIA RTX 3050 (6 GB).
 
-------------------------------------------------------------------------
+The application loads `models/neuroscan_cnn_v2_bn_final.keras`. Earlier models are kept in `experiments/` to document the development process.
+
+---
 
 ## Dataset
 
-The project used the following Kaggle dataset:
+[De-duplicated Brain MRI Dataset](https://www.kaggle.com/datasets/faysal202114023/de-duplicated-brain-mri-dataset) on Kaggle (`faysal202114023/de-duplicated-brain-mri-dataset`).
 
-**De-duplicated Brain MRI Dataset**\
-Dataset identifier: `faysal202114023/de-duplicated-brain-mri-dataset`
+| Split | Images |
+|---|---:|
+| Training | 15,595 |
+| Validation | 3,119 |
+| Test | 2,080 |
+| **Total** | **20,794** |
 
-The recorded dataset split contains:
+Training split class distribution: glioma 4,388, meningioma 3,292, no tumor 4,880, pituitary 3,035.
 
-  Split          Number of images
-  ------------ ------------------
-  Training                 15,595
-  Validation                3,119
-  Testing                   2,080
-  **Total**            **20,794**
+The dataset is not included in this repository. Download it from its original source and follow its terms of use.
 
-### Class distribution recorded during exploration
+**Preprocessing:** images are converted to RGB, resized to 224 × 224, converted to tensors (pixel values 0-1) and arranged channels-last. Training adds small random rotations (±10°), translations (5%) and scaling (95-105%). Validation, test and inference use the deterministic pipeline only, from the same shared code.
 
-  Class          Images
-  ------------ --------
-  Glioma          4,388
-  Meningioma      3,292
-  No Tumor        4,880
-  Pituitary       3,035
+---
 
-### Preprocessing
+## How it works
 
-Images are converted to RGB, resized to **224 × 224**, converted to
-tensors, and arranged in channels-last format for the model.
-
-Training-time augmentation includes small rotations and affine
-transformations. Validation, testing, and inference use deterministic
-preprocessing without random augmentation.
-
-The dataset is not included in this repository. Users must obtain it
-separately from its original source and follow the dataset's terms.
-
-------------------------------------------------------------------------
-
-## Application Architecture
-
-The application separates the browser interface, API, and
-model-inference logic.
-
-``` text
-                 User
-                  |
-                  v
-        Browser-based Frontend
-          HTML / CSS / JavaScript
-                  |
-          POST /predict
-                  |
-                  v
-             FastAPI
-          backend/main.py
-                  |
-                  v
-          Inference Pipeline
-           src/inference.py
-                  |
-        Image preprocessing
-       RGB -> 224x224 -> Tensor
-                  |
-                  v
-          Trained CNN Model
- models/neuroscan_cnn_v2_bn_final.keras
-                  |
-                  v
-        Four class scores returned
-                  |
-                  v
-        FastAPI JSON response
-                  |
-                  v
-       Frontend displays results
+```mermaid
+flowchart LR
+    A[Browser UI<br/>HTML / CSS / JS] -->|POST /predict| B[FastAPI<br/>backend/main.py]
+    B --> C[Preprocessing<br/>RGB, 224x224, tensor]
+    C --> D[CNN V2<br/>Keras / PyTorch backend]
+    D --> E[Class scores]
+    E -->|JSON| A
 ```
 
-### Prediction flow
+1. The user selects or drops an MRI image in the browser.
+2. JavaScript validates the file and sends it to `/predict`.
+3. The backend applies the same preprocessing used for validation and test images.
+4. The cached model returns scores for all four classes.
+5. The interface shows the predicted class, all scores and a confidence indicator.
 
-1.  The user opens the NeuroScan interface.
-2.  The user selects or drops an MRI image.
-3.  JavaScript validates the selected file and sends it to the API.
-4.  FastAPI receives the uploaded image.
-5.  The inference pipeline applies the expected preprocessing.
-6.  The cached Keras model generates four class scores.
-7.  The API returns the predicted class and all four scores.
-8.  The frontend displays the result and confidence visualization.
+---
 
-------------------------------------------------------------------------
+## Project structure
 
-## Project Structure
-
-``` text
+```text
 NeuroScan/
-│
 ├── backend/
 │   ├── __init__.py
-│   └── main.py
-│
-├── experiments/
-│   ├── cnn_v1/
-│   │   └── neuroscan_cnn.keras
-│   ├── cnn_v2/
-│   │   └── best_cnn_v2_bn.keras
-│   ├── training_history_v2.json
-│   └── tranfer_learning/
-│       ├── train_transfer.py
-│       └── transfer_model.py
-│
+│   └── main.py                  # FastAPI app
 ├── frontend/
 │   ├── index.html
 │   ├── script.js
 │   └── style.css
-│
 ├── models/
-│   └── neuroscan_cnn_v2_bn_final.keras
-│
+│   └── neuroscan_cnn_v2_bn_final.keras   # model used by the app
+├── experiments/
+│   ├── cnn_v1/
+│   ├── cnn_v2/
+│   ├── transfer_learning/       # EfficientNetB0 experiment
+│   └── training_history_v2.json
+├── reports/                     # curves, confusion matrices, classification report
 ├── notebook/
 │   └── data_exploration.py
-│
-├── reports/
-│   ├── accuracy_v2_bn.png
-│   ├── classification_report_v2.txt
-│   ├── confusion_matrix.png
-│   ├── confusion_matrix_v2.png
-│   ├── loss_v2_bn.png
-│   └── prediction_samples.png
-│
 ├── src/
 │   ├── cnn_model.py
 │   ├── inference.py
 │   └── preprocessing.py
-│
-├── .gitignore
-├── .python-version
-├── requirements.txt
 ├── train.py
-└── evaluate.py
+├── evaluate.py
+└── requirements.txt
 ```
 
-> Note: The transfer-learning folder is currently named
-> `tranfer_learning` in the project tree. Consider renaming it to
-> `transfer_learning` for correct spelling.
+---
 
-------------------------------------------------------------------------
+## Run locally
 
-## Tech Stack
-
-  Area                   Technology
-  ---------------------- -----------------------
-  Programming language   Python 3.11
-  Deep learning API      Keras 3
-  Keras backend          PyTorch
-  Model architecture     Custom CNN
-  Image processing       Pillow, torchvision
-  Numerical operations   NumPy
-  Backend/API            FastAPI
-  ASGI server            Uvicorn
-  Frontend               HTML, CSS, JavaScript
-  Version control        Git and GitHub
-
-------------------------------------------------------------------------
-
-## Run Locally
-
-### 1. Clone the repository
-
-``` bash
+```bash
 git clone https://github.com/ayandabhoya07/NeuroScan.git
 cd NeuroScan
-```
 
-Replace `YOUR` with the GitHub account that hosts the
-repository.
-
-### 2. Create and activate a virtual environment
-
-On Windows:
-
-``` bash
+# Windows
 py -3.11 -m venv .venv
 .venv\Scripts\activate
-```
 
-On macOS or Linux:
-
-``` bash
+# macOS / Linux
 python3.11 -m venv .venv
 source .venv/bin/activate
-```
 
-### 3. Install dependencies
-
-``` bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
-```
 
-The project was developed with Keras 3 using the PyTorch backend. The
-dependency versions and installation method should be checked for
-compatibility with your operating system and hardware. The original
-development environment used an NVIDIA GPU, while a deployment host may
-use CPU-only inference.
-
-### 4. Start the application
-
-Run the command from the project root:
-
-``` bash
 python -m uvicorn backend.main:app --reload
 ```
 
-### 5. Open NeuroScan
+Open <http://127.0.0.1:8000>. Interactive API docs are at <http://127.0.0.1:8000/docs>.
 
-Visit:
+Make sure `models/neuroscan_cnn_v2_bn_final.keras` exists before starting. The project was developed with Keras 3 on the PyTorch backend and an NVIDIA GPU. CPU-only inference works but is slower, and dependency versions may need adjusting for your system.
 
-``` text
-http://127.0.0.1:8000
+**Train and evaluate** (needs the dataset in `brain_mri/{train,val,test}`):
+
+```bash
+python train.py
+python evaluate.py
 ```
 
-FastAPI also exposes interactive API documentation at:
+---
 
-``` text
-http://127.0.0.1:8000/docs
+## API
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/` | Serves the web interface |
+| GET | `/health` | Health check |
+| POST | `/predict` | Accepts an image, returns class scores |
+
+```bash
+curl -X POST http://127.0.0.1:8000/predict -F "file=@scan.jpg"
 ```
 
-The application loads the selected model from:
+Response format (illustrative values, not a real prediction):
 
-``` text
-models/neuroscan_cnn_v2_bn_final.keras
-```
-
-Make sure this file is present before starting the application.
-
-------------------------------------------------------------------------
-
-## API Endpoints
-
-  -----------------------------------------------------------------------
-  Method                  Endpoint                Description
-  ----------------------- ----------------------- -----------------------
-  `GET`                   `/`                     Serves the NeuroScan
-                                                  frontend
-
-  `GET`                   `/health`               Checks
-                                                  application/model
-                                                  health
-
-  `POST`                  `/predict`              Accepts an image and
-                                                  returns classification
-                                                  results
-  -----------------------------------------------------------------------
-
-### Example prediction response
-
-The `/predict` endpoint returns JSON in the following structure:
-
-``` json
+```json
 {
   "predicted_class": "glioma",
   "confidence": 0.94,
@@ -426,69 +224,39 @@ The `/predict` endpoint returns JSON in the following structure:
 }
 ```
 
-This is an illustrative response showing the response format, not a real
-prediction or a guaranteed result.
+---
 
-------------------------------------------------------------------------
+## Limitations
 
-## Important Notes and Limitations
+- Educational project; no clinical validation.
+- Evaluated on one dataset and one held-out split. Performance on other scanners, hospitals or populations is unknown.
+- Meningioma recall (85.19%) is lower than the other classes, and some tumor scans are predicted as "no tumor".
+- Softmax scores are not calibrated probabilities and must not be read as medical certainty. The high, moderate and low labels in the interface are display thresholds, not clinical categories.
+- Works on single 2D images, not full 3D MRI volumes.
 
--   NeuroScan is an educational project, not a clinically validated
-    diagnostic tool.
--   Model performance is measured on the selected dataset and its
-    held-out test split.
--   Performance may change when images come from different sources or
-    imaging systems.
--   Meningioma recall is lower than the other class recalls in the
-    reported evaluation.
--   Softmax scores are not necessarily calibrated probabilities and must
-    not be interpreted as medical certainty.
--   The frontend's high, moderate, and low confidence labels are display
-    thresholds, not clinically validated categories.
--   Do not use the application to make medical decisions. Consult
-    qualified healthcare professionals for medical interpretation.
+---
 
-------------------------------------------------------------------------
+## Future work
 
-## Future Improvements
+- Fine-tune EfficientNetB0 and compare it with the custom CNN
+- Add Grad-CAM heatmaps to show which regions drive a prediction
+- Evaluate on an independent external dataset
+- Calibrate confidence scores and analyze meningioma errors in more depth
+- Add automated tests for preprocessing, inference and the API
+- Add structured experiment tracking and request logging for deployment
 
-Potential next steps include:
+---
 
--   Add automated tests for preprocessing, inference, and API endpoints.
--   Add model calibration and more comprehensive uncertainty evaluation.
--   Evaluate on an independent external dataset.
--   Improve analysis of class-specific errors, particularly meningioma.
--   Add structured experiment tracking and reproducible training
-    configurations.
--   Review CPU inference speed, memory use, and dependency compatibility
-    before cloud deployment.
--   Add deployment monitoring, request logging, and input validation.
--   Improve documentation with application screenshots and a
-    demonstration video.
+## Tech stack
 
-------------------------------------------------------------------------
+Python 3.11 · Keras 3 (PyTorch backend) · PyTorch / torchvision · FastAPI · Uvicorn · Pillow · NumPy · scikit-learn · Matplotlib · HTML / CSS / JavaScript
+
+---
 
 ## Acknowledgements
 
--   The creators and maintainers of the brain MRI dataset used for this
-    educational project.
--   The open-source communities behind Keras, PyTorch, FastAPI, NumPy,
-    Pillow, and the frontend technologies.
-
-------------------------------------------------------------------------
+Thanks to the creators of the brain MRI dataset and to the open-source communities behind Keras, PyTorch, FastAPI, NumPy and Pillow.
 
 ## Author
 
-**Your Name**\
-GitHub: [YOUR_GITHUB_PROFILE](https://github.com/ayandabhoya07)
-
-------------------------------------------------------------------------
-
-```{=html}
-<p align="center">
-```
-`<strong>`{=html}NeuroScan`</strong>`{=html}`<br>`{=html} An educational
-end-to-end deep learning project.
-```{=html}
-</p>
-```
+**`<Your name>`** · [GitHub](https://github.com/ayandabhoya07) · [LinkedIn](`<your LinkedIn URL>`)
