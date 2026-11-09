@@ -259,4 +259,4 @@ Thanks to the creators of the brain MRI dataset and to the open-source communiti
 
 ## Author
 
-**`<Your name>`** · [GitHub](https://github.com/ayandabhoya07) · [LinkedIn](`<your LinkedIn URL>`)
+**`Ayan`** · [GitHub](https://github.com/ayandabhoya07) · [LinkedIn](` https://www.linkedin.com/in/ayan-dabhoya-3685382aa/`)
