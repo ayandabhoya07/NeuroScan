@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>NeuroScan | AI Brain MRI Analysis</title>
+
+    <meta name="description"
+          content="NeuroScan - AI-powered brain MRI image classification using deep learning.">
+
+    <link rel="stylesheet" href="/static/style.css">
+
+    <script src="/static/script.js" defer></script>
+</head>
+
+<body>
+
+    <!-- Background Effects -->
+    <div class="background-effects">
+        <div class="glow glow-one"></div>
+        <div class="glow glow-two"></div>
+    </div>
+
+
+    <!-- Navigation -->
+    <header class="navbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                <span>✳</span>
+            </div>
+
+            <div class="brand-text">
+                <h2>Neuro<span>Scan</span></h2>
+                <p>INTELLIGENCE IN IMAGING</p>
+            </div>
+
+        </div>
+
+
+        <nav class="nav-links">
+            <a href="#analyzer" class="active">Analyzer</a>
+            <a href="#about">About</a>
+        </nav>
+
+
+        <div class="system-status">
+            <span class="status-indicator"></span>
+            <span>AI SYSTEM ONLINE</span>
+        </div>
+
+    </header>
+
+
+
+    <!-- Main Content -->
+    <main class="main-container">
+
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+
+            <div class="hero-badge">
+                <span>✦</span>
+                DEEP LEARNING POWERED ANALYSIS
+            </div>
+
+
+            <h1>
+                See Beyond the
+                <span>Scan.</span>
+            </h1>
+
+
+            <p>
+                An intelligent brain MRI classification platform
+                powered by convolutional neural networks.
+                Upload an image and explore the model's predictions.
+            </p>
+
+
+            <div class="hero-stats">
+
+                <div class="hero-stat">
+                    <h3>93.56%</h3>
+                    <span>Test Accuracy</span>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="hero-stat">
+                    <h3>4</h3>
+                    <span>4 MRI Categories</span>
+                </div>
+
+                <div class="stat-divider"></div>
+
+                <div class="hero-stat">
+                    <h3>NeuroScan AI Engine</h3>
+                    <span>Deep Learning Model</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Analyzer Section -->
+        <section class="analyzer-section" id="analyzer">
+
+
+            <!-- Upload Panel -->
+            <div class="upload-panel">
+
+                <div class="section-heading">
+
+                    <div>
+                        <span class="section-label">STEP 01</span>
+                        <h2>Upload MRI Scan</h2>
+                        <p>Select a brain MRI image for model analysis.</p>
+                    </div>
+
+                    <div class="upload-icon">
+                        ✧
+                    </div>
+
+                </div>
+
+
+
+                <!-- Upload Area -->
+                <div class="upload-area" id="uploadArea">
+
+                    <input
+                        type="file"
+                        id="fileInput"
+                        accept="image/png, image/jpeg, image/jpg"
+                        hidden
+                    >
+
+                    <div class="upload-content" id="uploadContent">
+
+                        <div class="upload-symbol">
+                            ↑
+                        </div>
+
+                        <h3>Drop your MRI image here</h3>
+
+                        <p>or click below to browse files</p>
+
+                        <button type="button" id="browseButton">
+                            Browse Files
+                        </button>
+
+                        <span class="file-info">
+                            Supported formats: JPG, JPEG, PNG
+                        </span>
+
+                    </div>
+
+
+                    <!-- Image Preview -->
+                    <div class="image-preview" id="imagePreview">
+
+                        <img id="previewImage" src="" alt="Uploaded MRI preview">
+
+                        <div class="preview-details">
+                            <h4 id="fileName">MRI Image</h4>
+                            <p id="fileSize">Image ready for analysis</p>
+                        </div>
+
+                        <button type="button" id="removeImage">
+                            Remove
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Analyze Button -->
+                <button
+                    type="button"
+                    class="analyze-button"
+                    id="analyzeButton"
+                    disabled
+                >
+
+                    <span>Analyze MRI Scan</span>
+                    <span class="button-arrow">→</span>
+
+                </button>
+
+
+                <p class="upload-note">
+                    <span>🔒</span>
+                    Image processing is performed through the NeuroScan backend.
+                </p>
+
+            </div>
+
+
+
+            <!-- Results Panel -->
+            <div class="results-panel">
+
+                <div class="section-heading">
+
+                    <div>
+                        <span class="section-label">STEP 02</span>
+                        <h2>Analysis Results</h2>
+                        <p>Model-generated classification output.</p>
+                    </div>
+
+                    <div class="result-icon">
+                        ◈
+                    </div>
+
+                </div>
+
+
+
+                <!-- Initial Empty State -->
+                <div class="empty-results" id="emptyResults">
+
+                    <div class="empty-visual">
+                        <div class="scan-circle">
+                            <span>◉</span>
+                        </div>
+                    </div>
+
+                    <h3>Awaiting Analysis</h3>
+
+                    <p>
+                        Upload an MRI image and click
+                        <strong>Analyze MRI Scan</strong>
+                        to see the model's prediction.
+                    </p>
+
+                </div>
+
+
+
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState">
+
+                    <div class="loader"></div>
+
+                    <h3>Analyzing MRI Scan</h3>
+
+                    <p>Processing image through the CNN model...</p>
+
+                </div>
+
+
+
+                <!-- Prediction Results -->
+                <div class="prediction-results" id="predictionResults">
+
+                    <div class="prediction-label">
+                        MODEL PREDICTION
+                    </div>
+
+
+                    <div class="prediction-class" id="predictedClass">
+                        No Tumor
+                    </div>
+
+
+                    <div class="confidence-container">
+
+                        <div class="confidence-heading">
+                            <span>Model confidence</span>
+                            <strong id="confidenceValue">98.48%</strong>
+                        </div>
+
+                        <div class="confidence-track">
+                            <div
+                                class="confidence-fill"
+                                id="confidenceBar"
+                            ></div>
+                        </div>
+                        <p id="confidenceStatus" class="confidence-status"></p>
+                    </div>
+
+
+                    <div class="probability-section">
+
+                        <h3>Class Probabilities</h3>
+
+                        <div class="probability-list" id="probabilityList">
+
+                            <!-- JavaScript will insert probability bars here -->
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="result-disclaimer">
+                        Educational AI classification output.
+                        Not intended for clinical diagnosis.
+                    </div>
+
+                </div>
+
+
+                <!-- Error Message -->
+                <div class="error-message" id="errorMessage"></div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- About Section -->
+        <section class="about-section" id="about">
+
+            <div class="about-heading">
+                <span class="section-label">ABOUT THE TECHNOLOGY</span>
+                <h2>Built with Deep Learning.</h2>
+                <p>
+                    NeuroScan uses a custom-trained convolutional neural
+                    network to classify brain MRI images into four categories.
+                </p>
+            </div>
+
+
+            <div class="technology-grid">
+
+                <div class="technology-card">
+                    <span>01</span>
+                    <h3>Image Processing</h3>
+                    <p>
+                        MRI images are resized and converted into
+                        the format expected by the trained model.
+                    </p>
+                </div>
+
+                <div class="technology-card">
+                    <span>02</span>
+                    <h3>CNN Architecture</h3>
+                    <p>
+                        A custom convolutional neural network
+                        extracts relevant visual features.
+                    </p>
+                </div>
+
+                <div class="technology-card">
+                    <span>03</span>
+                    <h3>Classification</h3>
+                    <p>
+                        The model generates probability scores
+                        across four classification categories.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- Disclaimer -->
+        <section class="disclaimer-section">
+
+            <span>IMPORTANT DISCLAIMER</span>
+
+            <p>
+                NeuroScan is an educational machine learning project.
+                Its predictions are not a substitute for professional
+                medical evaluation, diagnosis, or treatment.
+            </p>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- Footer -->
+    <footer class="footer">
+
+        <div class="footer-brand">
+            Neuro<span>Scan</span>
+        </div>
+
+        <p>
+            Designed with intelligence. Powered by deep learning.
+        </p>
+
+        <span>© 2026 NeuroScan</span>
+
+    </footer>
+
+
+</body>
+
+</html>
